@@ -1,5 +1,5 @@
 import React from "react";
-import "./MyBookings.css";
+import "../MyBookings.css";
 
 function MyBookings({ onBack, currentUser }) {
   // =========================

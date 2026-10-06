@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import "./Booking.css";
+import "../Booking.css";
 import Auth from "./Auth.jsx";
 
 export default function Booking({

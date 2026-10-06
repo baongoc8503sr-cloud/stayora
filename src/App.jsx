@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import SearchResults from "./SearchResults";
-import StayDetail from "./StayDetail";
-import Auth from "./Auth.jsx";
-import AccountCenter from "./AccountCenter.jsx";
-import FavoriteButton from "./FavoriteButton.jsx";
-import MyBookings from "./MyBookings.jsx";
+import SearchResults from "./customer/SearchResults";
+import StayDetail from "./customer/StayDetail";
+import Auth from "./customer/Auth.jsx";
+import AccountCenter from "./customer/AccountCenter.jsx";
+import FavoriteButton from "./customer/FavoriteButton.jsx";
+import MyBookings from "./customer/MyBookings.jsx";
 // ======================================================
 // DỮ LIỆU CHỖ NGHỈ NỔI BẬT
 // DÙNG CHUNG VỚI SEARCHRESULTS
