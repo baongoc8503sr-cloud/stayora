@@ -1,19 +1,18 @@
-# React + Vite
+# Stayora
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Ứng dụng đặt phòng Đà Lạt xây dựng bằng React và Vite.
 
-Currently, two official plugins are available:
+## Chạy ứng dụng
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm install
+npm run dev
+```
 
-## React Compiler
+Mở `/admin` để vào khu vực quản trị. Thông tin đăng nhập quản trị được cấu hình bằng `VITE_ADMIN_EMAIL` và `VITE_ADMIN_PASSWORD` trong `.env.local`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Dữ liệu demo và đồng bộ
 
-## Expanding the Oxlint configuration
+Ở lần chạy đầu, ứng dụng thêm 100 hồ sơ khách demo, 16 tài khoản chủ nhà gắn riêng với 16 chỗ nghỉ, 100 đơn đặt phòng mẫu và 60 đánh giá mẫu vào `localStorage`. Hồ sơ demo dùng địa chỉ `example.test` và không phải tài khoản người dùng thật. Danh mục 16 chỗ nghỉ là nguồn dữ liệu chung cho trang chủ, tìm kiếm và quản trị; đánh giá mới cập nhật điểm và số lượt đánh giá của chỗ nghỉ. Đơn đặt phòng và trạng thái của đơn được dùng chung cho lịch sử khách, trang quản trị và báo cáo doanh thu.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
-## Git workflow test
-
-Stayora team sử dụng GitHub để quản lý và cộng tác dự án.
+Dữ liệu hiện được lưu trong trình duyệt và đồng bộ giữa các trang/tab của cùng trình duyệt. Đây là dữ liệu demo phía client, chưa phải cơ sở dữ liệu dùng chung giữa thiết bị hay hệ thống xác thực phù hợp để triển khai production.

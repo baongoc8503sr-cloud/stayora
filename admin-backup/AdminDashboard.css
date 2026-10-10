@@ -1,4 +1,4 @@
-body.admin-mode {
+﻿body.admin-mode {
   --admin-forest: #1d4217;
   --admin-forest-dark: #183813;
   --admin-green: #2e6a26;
@@ -112,8 +112,7 @@ body.admin-mode .admin-shell * {
   border-radius: 50%;
   background: #dce8d5;
   color: var(--admin-forest-dark);
-  font-size: 10px;
-  letter-spacing: 0.2px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -199,6 +198,31 @@ body.admin-mode .admin-shell * {
 
 .admin-sidebar-bottom {
   margin-top: auto;
+}
+
+.admin-help-card {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  margin: 0 2px 13px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.admin-help-card > span {
+  color: #bbd9a9;
+  font-size: 20px;
+}
+
+.admin-help-card strong {
+  font-size: 12px;
+}
+
+.admin-help-card small {
+  color: #aabda2;
+  font-size: 11px;
 }
 
 .admin-exit {
@@ -941,11 +965,6 @@ body.admin-mode .admin-panel-heading h2 {
   color: #4e8645;
 }
 
-.admin-status-select.completed {
-  background: #eaf1fa;
-  color: #426b9e;
-}
-
 .admin-status-select.pending {
   background: #fff6e5;
   color: #ad7d20;
@@ -954,12 +973,6 @@ body.admin-mode .admin-panel-heading h2 {
 .admin-status-select.cancelled {
   background: #fbefed;
   color: #b86256;
-}
-
-.admin-demo-tag {
-  color: #98702c;
-  font-size: 10px;
-  font-weight: 600;
 }
 
 .admin-empty-row {

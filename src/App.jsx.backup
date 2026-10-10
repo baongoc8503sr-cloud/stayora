@@ -1,0 +1,1357 @@
+import { useEffect, useState } from "react";
+import "./App.css";
+<<<<<<< HEAD
+import SearchResults from "./SearchResults";
+import StayDetail from "./StayDetail";
+import Auth from "./Auth.jsx";
+import AccountCenter from "./AccountCenter.jsx";
+import FavoriteButton from "./FavoriteButton.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
+
+function App() {
+  const [isAdmin, setIsAdmin] = useState(
+    window.location.pathname.replace(/\/+$/, "") === "/admin"
+  );
+
+  useEffect(() => {
+    const syncRoute = () => {
+      setIsAdmin(window.location.pathname.replace(/\/+$/, "") === "/admin");
+    };
+
+    window.addEventListener("popstate", syncRoute);
+    return () => window.removeEventListener("popstate", syncRoute);
+  }, []);
+
+  // =========================
+  // SEARCH
+  // =========================
+=======
+import SearchResults from "./customer/SearchResults";
+import StayDetail from "./customer/StayDetail";
+import Auth from "./customer/Auth.jsx";
+import AccountCenter from "./customer/AccountCenter.jsx";
+import FavoriteButton from "./customer/FavoriteButton.jsx";
+import MyBookings from "./customer/MyBookings.jsx";
+// ======================================================
+// DỮ LIỆU CHỖ NGHỈ NỔI BẬT
+// DÙNG CHUNG VỚI SEARCHRESULTS
+// ======================================================
+
+const featuredStays = [
+  {
+    id: 1,
+    name: "The Pine House",
+    area: "Trung tâm Đà Lạt",
+    type: "Homestay",
+    price: 650000,
+    rating: 4.9,
+    reviews: 128,
+    image:
+      "https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=1000&q=80",
+    amenities: [
+      "WiFi",
+      "Bãi đỗ xe",
+      "Ban công",
+    ],
+    rooms: [
+      "Phòng Standard",
+      "Phòng Deluxe View Đồi",
+      "Phòng Family",
+    ],
+  },
+
+  {
+    id: 2,
+    name: "Mây Đà Lạt Homestay",
+    area: "Trại Mát",
+    type: "Homestay",
+    price: 520000,
+    rating: 4.8,
+    reviews: 96,
+    image:
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1000&q=80",
+    amenities: [
+      "WiFi",
+      "Bữa sáng",
+      "Ban công",
+    ],
+    rooms: [
+      "Phòng Standard",
+      "Phòng Deluxe",
+    ],
+  },
+
+  {
+    id: 3,
+    name: "The Hill Villa",
+    area: "Tà Nung",
+    type: "Villa",
+    price: 1200000,
+    rating: 4.9,
+    reviews: 74,
+    image:
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
+    amenities: [
+      "WiFi",
+      "Hồ bơi",
+      "Bãi đỗ xe",
+    ],
+    rooms: [
+      "Phòng Deluxe View Đồi",
+      "Phòng Family",
+      "Villa nguyên căn",
+    ],
+  },
+];
+
+function App() {
+  // =========================
+  // SEARCH
+  // =========================
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+  const [area, setArea] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState("2 khách");
+
+  const [showResults, setShowResults] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+
+  // Lưu đúng chỗ nghỉ người dùng vừa chọn
+  const [selectedStay, setSelectedStay] = useState(null);
+
+  // =========================
+  // AUTH
+  // =========================
+<<<<<<< HEAD
+  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAccountCenter, setShowAccountCenter] = useState(false);
+
+  // =========================
+  // KIỂM TRA ĐĂNG NHẬP
+  // =========================
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("stayoraCurrentUser");
+=======
+
+  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showAccountCenter, setShowAccountCenter] =
+    useState(false);
+  const [showMyBookings, setShowMyBookings] = useState(false);
+  // =========================
+  // KIỂM TRA ĐĂNG NHẬP
+  // =========================
+
+  useEffect(() => {
+    try {
+      const savedUser =
+        localStorage.getItem("stayoraCurrentUser");
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+      if (savedUser) {
+        setCurrentUser(JSON.parse(savedUser));
+      }
+    } catch (error) {
+<<<<<<< HEAD
+      console.error("Không thể đọc thông tin tài khoản:", error);
+=======
+      console.error(
+        "Không thể đọc thông tin tài khoản:",
+        error
+      );
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+      localStorage.removeItem("stayoraCurrentUser");
+    }
+  }, []);
+
+<<<<<<< HEAD
+  if (isAdmin) {
+    return (
+      <AdminDashboard
+        onExit={() => {
+          window.history.pushState({}, "", "/");
+          setIsAdmin(false);
+        }}
+      />
+    );
+  }
+
+  // =========================
+  // TÌM PHÒNG
+  // =========================
+  function handleSearch() {
+    if (!area) {
+      alert("Vui lòng chọn khu vực tại Đà Lạt");
+      return;
+    }
+
+    setShowDetail(false);
+    setSelectedStay(null);
+    setShowResults(true);
+  }
+
+  // =========================
+  // XEM TẤT CẢ CHỖ NGHỈ
+  // =========================
+  function handleViewAll() {
+    // Xóa khu vực đang chọn để SearchResults
+    // hiển thị toàn bộ chỗ nghỉ
+    setArea("");
+
+    setShowDetail(false);
+    setSelectedStay(null);
+    setShowResults(true);
+  }
+
+  // =========================
+  // XEM CHI TIẾT CHỖ NGHỈ
+  // =========================
+  function handleViewDetail(stay) {
+    // Lưu đúng chỗ nghỉ người dùng vừa click
+    setSelectedStay(stay);
+
+    // Đóng trang kết quả
+    setShowResults(false);
+
+    // Mở trang chi tiết
+    setShowDetail(true);
+  }
+
+  // =========================
+  // QUAY LẠI KẾT QUẢ
+  // =========================
+  function handleBackToResults() {
+    setShowDetail(false);
+    setShowResults(true);
+  }
+
+  // =========================
+  // AUTH ACTIONS
+  // =========================
+  function openLogin() {
+    setAuthMode("login");
+    setShowAuth(true);
+  }
+
+  function openRegister() {
+    setAuthMode("register");
+    setShowAuth(true);
+  }
+
+  function handleAuthSuccess(user) {
+    setCurrentUser(user);
+    setShowAuth(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("stayoraCurrentUser");
+    sessionStorage.removeItem("stayoraCurrentUser");
+
+=======
+  // =========================
+  // TÌM PHÒNG
+  // =========================
+
+  function handleSearch() {
+    if (!area) {
+      alert("Vui lòng chọn khu vực tại Đà Lạt");
+      return;
+    }
+
+    setShowDetail(false);
+    setSelectedStay(null);
+    setShowResults(true);
+  }
+
+  // =========================
+  // XEM TẤT CẢ CHỖ NGHỈ
+  // =========================
+
+  function handleViewAll() {
+    setArea("");
+
+    setShowDetail(false);
+    setSelectedStay(null);
+    setShowResults(true);
+  }
+
+  // =========================
+  // XEM CHI TIẾT CHỖ NGHỈ
+  // =========================
+
+  function handleViewDetail(stay) {
+    if (!stay) return;
+
+    setSelectedStay(stay);
+    setShowResults(false);
+    setShowDetail(true);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  // =========================
+  // QUAY LẠI KẾT QUẢ
+  // =========================
+
+  function handleBackToResults() {
+    setShowDetail(false);
+    setShowResults(true);
+  }
+
+  // =========================
+  // AUTH ACTIONS
+  // =========================
+
+  function openLogin() {
+    setAuthMode("login");
+    setShowAuth(true);
+  }
+
+  function openRegister() {
+    setAuthMode("register");
+    setShowAuth(true);
+  }
+  function handleOpenMyBookings() {
+  if (!currentUser) {
+    setAuthMode("login");
+    setShowAuth(true);
+    return;
+  }
+
+  setShowDetail(false);
+  setShowResults(false);
+  setShowAccountCenter(false);
+  setShowMyBookings(true);
+}
+  function handleAuthSuccess(user) {
+    setCurrentUser(user);
+    setShowAuth(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("stayoraCurrentUser");
+    sessionStorage.removeItem("stayoraCurrentUser");
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+    setCurrentUser(null);
+
+    alert("Bạn đã đăng xuất khỏi STAYORA.");
+  }
+
+<<<<<<< HEAD
+  // =========================
+  // DETAIL PAGE
+  // =========================
+    if (showDetail && selectedStay) {
+      return (
+      <StayDetail
+      stay={selectedStay}
+      onBack={handleBackToResults}
+      currentUser={currentUser}
+      onAuthSuccess={handleAuthSuccess}
+    />
+      );
+    }
+
+  // =========================
+  // SEARCH RESULTS PAGE
+  // =========================
+=======
+  // ======================================================
+  // DETAIL PAGE
+  // ======================================================
+  if (showMyBookings) {
+  return (
+    <MyBookings
+      currentUser={currentUser}
+      onBack={() => setShowMyBookings(false)}
+    />
+  );
+}
+  if (showDetail && selectedStay) {
+    return (
+      <StayDetail
+        stay={selectedStay}
+        onBack={handleBackToResults}
+        currentUser={currentUser}
+        onAuthSuccess={handleAuthSuccess}
+      />
+    );
+  }
+
+  // ======================================================
+  // SEARCH RESULTS PAGE
+  // ======================================================
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+  if (showResults) {
+    return (
+      <SearchResults
+        area={area}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        guests={guests}
+        onViewDetail={handleViewDetail}
+      />
+    );
+  }
+
+<<<<<<< HEAD
+  // =========================
+  // HOME PAGE
+  // =========================
+  return (
+    <div className="app">
+      {/* =========================
+          HEADER
+      ========================== */}
+=======
+  // ======================================================
+  // HOME PAGE
+  // ======================================================
+
+  return (
+    <div className="app">
+
+      {/* ==================================================
+          HEADER
+      ================================================== */}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+      <header className="header">
+        <div className="logo">
+          <span>✦</span>
+          STAYORA
+        </div>
+
+        <nav className="nav">
+          <a href="#home">Trang chủ</a>
+
+          <a href="#explore">
+            Khám phá
+          </a>
+
+          <a
+          href="#booking"
+          onClick={(e) => {
+            e.preventDefault();
+            handleOpenMyBookings();
+          }}
+        >
+          Đặt phòng của tôi
+        </a>
+
+          <a href="#favorite">
+            ♡ Yêu thích
+          </a>
+        </nav>
+
+        <div className="header-actions">
+<<<<<<< HEAD
+          {!currentUser ? (
+            <>
+              <button
+                type="button"
+                className="login-btn"
+                onClick={openLogin}
+              >
+                Đăng nhập
+              </button>
+
+=======
+
+          {!currentUser ? (
+            <>
+              <button
+                type="button"
+                className="login-btn"
+                onClick={openLogin}
+              >
+                Đăng nhập
+              </button>
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              <button
+                type="button"
+                className="signup-btn"
+                onClick={openRegister}
+              >
+                Đăng ký
+              </button>
+            </>
+          ) : (
+            <div
+<<<<<<< HEAD
+              onClick={() => setShowAccountCenter(true)}
+=======
+              onClick={() =>
+                setShowAccountCenter(true)
+              }
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+              }}
+            >
+<<<<<<< HEAD
+=======
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              <div
+                style={{
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "50%",
+                  background: "#111",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                }}
+              >
+                {currentUser.fullName
+                  ? currentUser.fullName
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase()
+                  : "U"}
+              </div>
+
+              <span
+                style={{
+                  fontSize: "13px",
+                  fontWeight: "600",
+                }}
+              >
+                {currentUser.fullName}
+              </span>
+
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleLogout();
+                }}
+                style={{
+                  padding: "9px 13px",
+                  border: "1px solid #222",
+                  borderRadius: "7px",
+                  background: "#fff",
+                  color: "#222",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                Đăng xuất
+              </button>
+<<<<<<< HEAD
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* =========================
+          MAIN
+      ========================== */}
+      <main>
+        {/* =========================
+            HERO
+        ========================== */}
+        <section className="hero" id="home">
+=======
+
+            </div>
+          )}
+
+        </div>
+      </header>
+
+      {/* ==================================================
+          MAIN
+      ================================================== */}
+
+      <main>
+
+        {/* ==================================================
+            HERO
+        ================================================== */}
+
+        <section
+          className="hero"
+          id="home"
+        >
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+          <div className="hero-overlay"></div>
+
+          <div className="hero-content">
+            <p className="hero-small">STAYORA • ĐÀ LẠT</p>
+
+            <h1>
+              Tìm một nơi
+              <br />
+              <span>để yêu Đà Lạt.</span>
+            </h1>
+
+            <p className="hero-description">
+              Khám phá những homestay và khách sạn
+              được tuyển chọn tại Đà Lạt cho chuyến
+              đi của bạn.
+            </p>
+
+            {/* SEARCH BOX */}
+
+            <div className="search-box">
+              <div className="search-item">
+<<<<<<< HEAD
+                <label>📍 KHU VỰC</label>
+=======
+
+                <label>
+                  📍 KHU VỰC
+                </label>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <select
+                  value={area}
+                  onChange={(e) =>
+                    setArea(e.target.value)
+                  }
+                >
+                  <option value="">
+                    Bạn muốn ở khu vực nào?
+                  </option>
+
+                  <option value="Trung tâm Đà Lạt">
+                    Trung tâm Đà Lạt
+                  </option>
+
+                  <option value="Hồ Xuân Hương">
+                    Hồ Xuân Hương
+                  </option>
+
+                  <option value="Chợ Đà Lạt">
+                    Chợ Đà Lạt
+                  </option>
+
+                  <option value="Trại Mát">
+                    Trại Mát
+                  </option>
+
+                  <option value="Tà Nung">
+                    Tà Nung
+                  </option>
+                </select>
+              </div>
+
+              <div className="search-item">
+<<<<<<< HEAD
+                <label>📅 NHẬN PHÒNG</label>
+=======
+
+                <label>
+                  📅 NHẬN PHÒNG
+                </label>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <input
+                  type="date"
+                  value={checkIn}
+<<<<<<< HEAD
+                  onChange={(e) => setCheckIn(e.target.value)}
+                />
+              </div>
+
+              <div className="search-item">
+                <label>📅 TRẢ PHÒNG</label>
+=======
+                  onChange={(e) =>
+                    setCheckIn(e.target.value)
+                  }
+                />
+
+              </div>
+
+              <div className="search-item">
+
+                <label>
+                  📅 TRẢ PHÒNG
+                </label>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <input
+                  type="date"
+                  value={checkOut}
+<<<<<<< HEAD
+                  onChange={(e) => setCheckOut(e.target.value)}
+                />
+              </div>
+
+              <div className="search-item">
+                <label>👤 KHÁCH</label>
+=======
+                  onChange={(e) =>
+                    setCheckOut(e.target.value)
+                  }
+                />
+
+              </div>
+
+              <div className="search-item">
+
+                <label>
+                  👤 KHÁCH
+                </label>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <select
+                  value={guests}
+                  onChange={(e) =>
+                    setGuests(e.target.value)
+                  }
+                >
+                  <option>1 khách</option>
+                  <option>2 khách</option>
+                  <option>3 khách</option>
+                  <option>4 khách</option>
+                  <option>5+ khách</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                className="search-btn"
+                onClick={handleSearch}
+              >
+                Tìm phòng
+              </button>
+            </div>
+          </div>
+        </section>
+
+<<<<<<< HEAD
+        {/* =========================
+            FEATURED STAYS
+        ========================== */}
+        <section className="section" id="explore">
+=======
+        {/* ==================================================
+            FEATURED STAYS
+        ================================================== */}
+
+        <section
+          className="section"
+          id="explore"
+        >
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+          <div className="section-heading">
+            <div>
+
+              <p className="section-label">
+                ĐƯỢC YÊU THÍCH
+              </p>
+
+<<<<<<< HEAD
+              <h2>Chỗ nghỉ nổi bật</h2>
+            </div>
+
+            {/* CLICK XEM TẤT CẢ */}
+=======
+              <h2>
+                Chỗ nghỉ nổi bật
+              </h2>
+
+            </div>
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+            <button
+              type="button"
+              className="view-all"
+              onClick={handleViewAll}
+            >
+              Xem tất cả →
+            </button>
+          </div>
+
+<<<<<<< HEAD
+          {/* TRANG CHỦ CHỈ HIỂN THỊ 3 CARD */}
+          <div className="hotel-grid">
+            {/* =========================
+                HOTEL 1
+            ========================== */}
+            <div className="hotel-card">
+              <div className="hotel-image hotel-1">
+                <FavoriteButton
+                  stay={{
+                    id: "pine-house",
+                    name: "The Pine House",
+                    location: "Trại Mát, Đà Lạt",
+                    price: 850000,
+                    rating: 4.9,
+                  }}
+                />
+
+                <span className="hotel-tag">
+                  Nổi bật
+                </span>
+              </div>
+
+              <div className="hotel-info">
+                <div className="hotel-title">
+                  <h3>The Pine House</h3>
+
+                  <span>⭐ 4.9</span>
+                </div>
+
+                <p>📍 Trại Mát, Đà Lạt</p>
+
+                <div className="hotel-price">
+                  <strong>850.000đ</strong>
+
+                  <span>/ đêm</span>
+=======
+          {/* ==================================================
+              3 CARD TRANG CHỦ
+              CHỈ NÚT "XEM CHI TIẾT" MỚI MỞ DETAIL
+          ================================================== */}
+
+          <div className="hotel-grid">
+
+            {featuredStays.map((stay, index) => (
+
+              <div
+                className="hotel-card"
+                key={stay.id}
+              >
+
+                {/* =========================
+                    IMAGE
+                ========================== */}
+
+                <div
+                  className={`hotel-image hotel-${index + 1}`}
+                  style={{
+                    backgroundImage: `url("${stay.image}")`,
+                  }}
+                >
+
+                  {/* =========================
+                      FAVORITE
+                      NẰM GÓC TRÊN BÊN PHẢI
+                  ========================== */}
+
+                  <div
+                    className="featured-favorite"
+                    onClick={(event) =>
+                      event.stopPropagation()
+                    }
+                  >
+                    <FavoriteButton
+                      stay={stay}
+                    />
+                  </div>
+
+                </div>
+
+                {/* =========================
+                    INFO
+                ========================== */}
+
+                <div className="hotel-info">
+
+                  <div className="hotel-title">
+
+                    <h3>
+                      {stay.name}
+                    </h3>
+
+                    <span>
+                      ⭐ {stay.rating}
+                    </span>
+
+                  </div>
+
+                  <p>
+                    📍 {stay.area}
+                  </p>
+
+                  <div className="hotel-price">
+
+                    <div>
+
+                      <strong>
+                        {new Intl.NumberFormat(
+                          "vi-VN"
+                        ).format(stay.price)}
+                        đ
+                      </strong>
+
+                      <span>
+                        / đêm
+                      </span>
+
+                    </div>
+
+                    {/* =========================
+                        CHỈ NÚT NÀY MỞ CHI TIẾT
+                    ========================== */}
+
+                    <button
+                      type="button"
+                      className="detail-btn"
+                      onClick={() =>
+                        handleViewDetail(stay)
+                      }
+                    >
+                      Xem chi tiết
+                    </button>
+
+                  </div>
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+                </div>
+              </div>
+<<<<<<< HEAD
+            </div>
+
+            {/* =========================
+                HOTEL 2
+            ========================== */}
+            <div className="hotel-card">
+              <div className="hotel-image hotel-2">
+                <FavoriteButton
+                  stay={{
+                    id: "may-da-lat",
+                    name: "Mây Đà Lạt Homestay",
+                    location: "Phường 4, Đà Lạt",
+                    price: 690000,
+                    rating: 4.8,
+                  }}
+                />
+              </div>
+
+              <div className="hotel-info">
+                <div className="hotel-title">
+                  <h3>Mây Đà Lạt Homestay</h3>
+
+                  <span>⭐ 4.8</span>
+                </div>
+
+                <p>📍 Phường 4, Đà Lạt</p>
+
+                <div className="hotel-price">
+                  <strong>690.000đ</strong>
+
+                  <span>/ đêm</span>
+                </div>
+              </div>
+            </div>
+
+            {/* =========================
+                HOTEL 3
+            ========================== */}
+            <div className="hotel-card">
+              <div className="hotel-image hotel-3">
+                <FavoriteButton
+                  stay={{
+                    id: "hill-villa",
+                    name: "The Hill Villa",
+                    location: "Tà Nung, Đà Lạt",
+                    price: 1450000,
+                    rating: 4.9,
+                  }}
+                />
+              </div>
+
+              <div className="hotel-info">
+                <div className="hotel-title">
+                  <h3>The Hill Villa</h3>
+
+                  <span>⭐ 4.9</span>
+                </div>
+
+                <p>📍 Tà Nung, Đà Lạt</p>
+
+                <div className="hotel-price">
+                  <strong>1.450.000đ</strong>
+
+                  <span>/ đêm</span>
+                </div>
+              </div>
+            </div>
+=======
+
+            ))}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+          </div>
+        </section>
+
+<<<<<<< HEAD
+        {/* =========================
+            EXPLORE DALAT
+        ========================== */}
+=======
+        {/* ==================================================
+            EXPLORE DALAT
+        ================================================== */}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+        <section className="dalat-section">
+          <div className="dalat-content">
+            <p className="section-label">
+              KHÁM PHÁ ĐÀ LẠT
+            </p>
+
+            <h2>
+              Mỗi góc nhỏ
+              <br />
+              một câu chuyện.
+            </h2>
+
+            <p>
+              Từ những con dốc phủ đầy hoa đến
+              những căn homestay giữa rừng thông,
+              hãy tìm một nơi khiến bạn muốn ở lại
+              lâu hơn.
+            </p>
+
+            <button
+              type="button"
+              className="dark-btn"
+            >
+              Khám phá Đà Lạt →
+            </button>
+          </div>
+        </section>
+
+<<<<<<< HEAD
+        {/* =========================
+            POPULAR AREAS
+        ========================== */}
+=======
+        {/* ==================================================
+            POPULAR AREAS
+        ================================================== */}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+        <section className="section">
+          <div className="section-heading">
+            <div>
+              <p className="section-label">
+                KHU VỰC
+              </p>
+
+              <h2>Ở đâu tại Đà Lạt?</h2>
+            </div>
+          </div>
+
+          <div className="area-grid">
+            <div className="area-card area-center">
+
+              <div>
+<<<<<<< HEAD
+                <h3>Trung tâm Đà Lạt</h3>
+=======
+
+                <h3>
+                  Trung tâm Đà Lạt
+                </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <p>
+                  Gần chợ • Hồ Xuân Hương
+                </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              </div>
+
+            </div>
+
+            <div className="area-card area-trai-mat">
+
+              <div>
+<<<<<<< HEAD
+                <h3>Trại Mát</h3>
+=======
+
+                <h3>
+                  Trại Mát
+                </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <p>
+                  Rừng thông • Yên bình
+                </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              </div>
+
+            </div>
+
+            <div className="area-card area-ta-nung">
+
+              <div>
+<<<<<<< HEAD
+                <h3>Tà Nung</h3>
+=======
+
+                <h3>
+                  Tà Nung
+                </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                <p>
+                  Thiên nhiên • Nghỉ dưỡng
+                </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+<<<<<<< HEAD
+        {/* =========================
+            WHY STAYORA
+        ========================== */}
+=======
+        {/* ==================================================
+            WHY STAYORA
+        ================================================== */}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+        <section className="why-section">
+          <div className="why-content">
+            <p className="section-label">
+              VÌ SAO STAYORA?
+            </p>
+
+            <h2>
+              Không chỉ là
+              <br />
+              một chỗ để ở.
+            </h2>
+
+            <p className="why-description">
+              STAYORA giúp bạn tìm được nơi lưu trú
+              phù hợp với cách bạn muốn trải nghiệm
+              Đà Lạt.
+            </p>
+
+            <div className="features">
+              <div className="feature">
+                <div className="feature-icon">
+                  01
+                </div>
+
+                <div>
+<<<<<<< HEAD
+                  <h3>Chọn đúng nơi</h3>
+=======
+
+                  <h3>
+                    Chọn đúng nơi
+                  </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                  <p>
+                    Tìm kiếm theo khu vực,
+                    mức giá và nhu cầu.
+                  </p>
+
+                </div>
+              </div>
+
+              <div className="feature">
+                <div className="feature-icon">
+                  02
+                </div>
+
+                <div>
+<<<<<<< HEAD
+                  <h3>Thông tin rõ ràng</h3>
+=======
+
+                  <h3>
+                    Thông tin rõ ràng
+                  </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                  <p>
+                    Hình ảnh, tiện nghi,
+                    giá và đánh giá minh bạch.
+                  </p>
+
+                </div>
+              </div>
+
+              <div className="feature">
+                <div className="feature-icon">
+                  03
+                </div>
+
+                <div>
+<<<<<<< HEAD
+                  <h3>Đặt phòng dễ dàng</h3>
+=======
+
+                  <h3>
+                    Đặt phòng dễ dàng
+                  </h3>
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+
+                  <p>
+                    Hoàn tất đặt phòng
+                    chỉ với vài bước.
+                  </p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+<<<<<<< HEAD
+        {/* =========================
+            FOOTER
+        ========================== */}
+=======
+        {/* ==================================================
+            FOOTER
+        ================================================== */}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+        <footer className="footer">
+          <div className="footer-top">
+            <div>
+              <div className="footer-logo">
+                ✦ STAYORA
+              </div>
+
+              <p>
+                Một nơi để ở.
+                <br />
+                Một lý do để trở lại Đà Lạt.
+              </p>
+            </div>
+
+            <div className="footer-column">
+              <h4>STAYORA</h4>
+
+              <span>Về chúng tôi</span>
+
+              <span>Điều khoản</span>
+
+              <span>Chính sách bảo mật</span>
+            </div>
+
+            <div className="footer-column">
+              <h4>HỖ TRỢ</h4>
+
+              <span>Trung tâm trợ giúp</span>
+
+              <span>Liên hệ</span>
+
+              <span>Câu hỏi thường gặp</span>
+            </div>
+            <div className="footer-column">
+              <h4>QUẢN LÝ</h4>
+              <a href="/admin">Trang quản trị</a>
+            </div>
+          </div>
+
+          <div className="copyright">
+            © 2026 STAYORA. Nền tảng đặt phòng Đà Lạt.
+          </div>
+        </footer>
+      </main>
+
+<<<<<<< HEAD
+      {/* =========================
+          AUTH
+      ========================== */}
+      {showAuth && (
+        <Auth
+          mode={authMode}
+          onClose={() => setShowAuth(false)}
+          onChangeMode={(mode) => setAuthMode(mode)}
+=======
+      {/* ==================================================
+          AUTH
+      ================================================== */}
+
+      {showAuth && (
+        <Auth
+          mode={authMode}
+          onClose={() =>
+            setShowAuth(false)
+          }
+          onChangeMode={(mode) =>
+            setAuthMode(mode)
+          }
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+          onAuthSuccess={handleAuthSuccess}
+        />
+      )}
+
+<<<<<<< HEAD
+      {/* =========================
+          ACCOUNT CENTER
+      ========================== */}
+      {showAccountCenter && currentUser && (
+        <AccountCenter
+          user={currentUser}
+          onClose={() => setShowAccountCenter(false)}
+          onUpdateUser={(updatedUser) => {
+            setCurrentUser(updatedUser);
+          }}
+        />
+      )}
+=======
+      {/* ==================================================
+          ACCOUNT CENTER
+      ================================================== */}
+
+      {showAccountCenter &&
+        currentUser && (
+          <AccountCenter
+            user={currentUser}
+            onClose={() =>
+              setShowAccountCenter(false)
+            }
+            onUpdateUser={(updatedUser) => {
+              setCurrentUser(updatedUser);
+            }}
+          />
+        )}
+
+>>>>>>> 686d2ba09e9c297225ee57890a5fea341b619cdb
+    </div>
+  );
+}
+
+export default App;

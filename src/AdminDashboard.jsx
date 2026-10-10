@@ -1,130 +1,19 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./AdminDashboard.css";
-
-const initialStays = [
-  {
-    id: 1,
-    name: "The Pine House",
-    area: "Trung t├óm ─É├á Lß║ít",
-    type: "Homestay",
-    price: 650000,
-    rating: 4.9,
-    reviews: 128,
-    image: "https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "B├úi ─æß╗ù xe", "Ban c├┤ng"],
-    rooms: ["Ph├▓ng Standard", "Ph├▓ng Deluxe View ─Éß╗ôi", "Ph├▓ng Family"],
-    owner: "Nguyß╗àn Minh Anh",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "M├óy ─É├á Lß║ít Homestay",
-    area: "Trß║íi M├ít",
-    type: "Homestay",
-    price: 520000,
-    rating: 4.8,
-    reviews: 96,
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "Bß╗»a s├íng", "Ban c├┤ng"],
-    rooms: ["Ph├▓ng Standard", "Ph├▓ng Deluxe"],
-    owner: "Trß║ºn Ngß╗ìc Mai",
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "The Hill Villa",
-    area: "T├á Nung",
-    type: "Villa",
-    price: 1200000,
-    rating: 4.9,
-    reviews: 74,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "Hß╗ô b╞íi", "B├úi ─æß╗ù xe"],
-    rooms: ["Ph├▓ng Deluxe View ─Éß╗ôi", "Ph├▓ng Family", "Villa nguy├¬n c─ân"],
-    owner: "L├¬ Ho├áng Nam",
-    isActive: true,
-  },
-  {
-    id: 4,
-    name: "An Nhi├¬n House",
-    area: "Hß╗ô Xu├ón H╞░╞íng",
-    type: "Homestay",
-    price: 780000,
-    rating: 4.7,
-    reviews: 82,
-    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "Bß╗»a s├íng", "B├úi ─æß╗ù xe"],
-    rooms: ["Ph├▓ng Standard", "Ph├▓ng Deluxe"],
-    owner: "Phß║ím Thu H├á",
-    isActive: true,
-  },
-  {
-    id: 5,
-    name: "Lß║╖ng House ─É├á Lß║ít",
-    area: "Chß╗ú ─É├á Lß║ít",
-    type: "Kh├ích sß║ín",
-    price: 890000,
-    rating: 4.8,
-    reviews: 113,
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "Bß╗»a s├íng", "Lß╗à t├ón 24/7"],
-    rooms: ["Ph├▓ng Standard", "Ph├▓ng Deluxe", "Ph├▓ng Family"],
-    owner: "─Éß╗ù Quß╗æc Bß║úo",
-    isActive: true,
-  },
-  {
-    id: 6,
-    name: "Forest View Villa",
-    area: "T├á Nung",
-    type: "Villa",
-    price: 1450000,
-    rating: 5,
-    reviews: 51,
-    image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=80",
-    amenities: ["WiFi", "Hß╗ô b╞íi", "Ban c├┤ng"],
-    rooms: ["Ph├▓ng Deluxe View ─Éß╗ôi", "Ph├▓ng Family", "Villa nguy├¬n c─ân"],
-    owner: "V┼⌐ Thanh T├╣ng",
-    isActive: true,
-  },
-];
+import { initialStays } from "./StayCatalog";
+import { getCollection, getStayCatalog, writeCollection } from "./stayoraData";
 
 const navigation = [
-  { id: "overview", label: "Tß╗òng quan", icon: "Γûª" },
-  { id: "stays", label: "Homestay", icon: "Γîé" },
-  { id: "users", label: "Ng╞░ß╗¥i d├╣ng", icon: "ΓÖÖ" },
-  { id: "bookings", label: "─Éß║╖t ph├▓ng", icon: "Γûú" },
-  { id: "revenue", label: "Doanh thu", icon: "ΓûÑ" },
-  { id: "settings", label: "C├ái ─æß║╖t", icon: "ΓÜÖ" },
+  { id: "overview", label: "Tổng quan", icon: "▦" },
+  { id: "stays", label: "Homestay", icon: "⌂" },
+  { id: "users", label: "Người dùng", icon: "♙" },
+  { id: "bookings", label: "Đặt phòng", icon: "▣" },
+  { id: "revenue", label: "Doanh thu", icon: "▥" },
+  { id: "settings", label: "Cài đặt", icon: "⚙" },
 ];
 
 const currency = (value) =>
-  `${new Intl.NumberFormat("vi-VN").format(Number(value) || 0)}─æ`;
-
-function readArray(key, fallback = []) {
-  try {
-    const value = localStorage.getItem(key);
-    if (!value) return fallback;
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : fallback;
-  } catch (error) {
-    console.error(`Kh├┤ng thß╗â ─æß╗ìc dß╗» liß╗çu ${key}:`, error);
-    return fallback;
-  }
-}
-
-function readManagedStays() {
-  const saved = readArray("stayoraManagedStays", null);
-  if (!saved) return initialStays;
-  const savedById = new Map(saved.map((stay) => [String(stay.id), stay]));
-  const originalIds = new Set(initialStays.map((stay) => String(stay.id)));
-  return [
-    ...initialStays.map((stay) => ({
-      ...stay,
-      ...savedById.get(String(stay.id)),
-    })),
-    ...saved.filter((stay) => !originalIds.has(String(stay.id))),
-  ];
-}
+  `${new Intl.NumberFormat("vi-VN").format(Number(value) || 0)}đ`;
 
 const defaultSettings = {
   brandName: "Stayora",
@@ -138,28 +27,28 @@ function readSettings() {
     const saved = localStorage.getItem("stayoraAdminSettings");
     return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
   } catch (error) {
-    console.error("Kh├┤ng thß╗â ─æß╗ìc c├ái ─æß║╖t quß║ún trß╗ï:", error);
+    console.error("Không thể đọc cài đặt quản trị:", error);
     return defaultSettings;
   }
 }
 
 function formatDate(value) {
-  if (!value) return "ΓÇö";
+  if (!value) return "—";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
-    ? "ΓÇö"
+    ? "—"
     : date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 function AdminWorkspace({ onExit }) {
   const [activePage, setActivePage] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [stays, setStays] = useState(readManagedStays);
-  const [users, setUsers] = useState(() => readArray("stayoraAccounts"));
-  const [bookings, setBookings] = useState(() => readArray("stayoraBookings"));
+  const [stays, setStays] = useState(() => getStayCatalog(initialStays));
+  const [users, setUsers] = useState(() => getCollection("stayoraAccounts"));
+  const [bookings, setBookings] = useState(() => getCollection("stayoraBookings"));
   const [settings, setSettings] = useState(readSettings);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Tß║Ñt cß║ú");
+  const [statusFilter, setStatusFilter] = useState("Tất cả");
   const [stayDialog, setStayDialog] = useState(null);
   const [toast, setToast] = useState("");
 
@@ -169,6 +58,22 @@ function AdminWorkspace({ onExit }) {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  useEffect(() => {
+    const refreshData = (event) => {
+      if (event.type === "storage" && event.key && !event.key.startsWith("stayora")) return;
+      setStays(getStayCatalog(initialStays));
+      setUsers(getCollection("stayoraAccounts"));
+      setBookings(getCollection("stayoraBookings"));
+    };
+
+    window.addEventListener("storage", refreshData);
+    window.addEventListener("stayora-data-changed", refreshData);
+    return () => {
+      window.removeEventListener("storage", refreshData);
+      window.removeEventListener("stayora-data-changed", refreshData);
+    };
+  }, []);
+
   const today = new Date().toISOString().slice(0, 10);
   const currentMonth = today.slice(0, 7);
   const activeStays = stays.filter((stay) => stay.isActive !== false);
@@ -177,7 +82,7 @@ function AdminWorkspace({ onExit }) {
     .filter(
       (booking) =>
         booking.createdAt?.slice(0, 7) === currentMonth &&
-        booking.status !== "─É├ú hß╗ºy"
+        ["Đã xác nhận", "Hoàn tất"].includes(booking.status)
     )
     .reduce((total, booking) => total + Number(booking.totalPrice || 0), 0);
 
@@ -188,9 +93,9 @@ function AdminWorkspace({ onExit }) {
           .toLowerCase()
           .includes(search.toLowerCase());
         const matchesStatus =
-          statusFilter === "Tß║Ñt cß║ú" ||
-          (statusFilter === "─Éang hoß║ít ─æß╗Öng" && stay.isActive !== false) ||
-          (statusFilter === "Tß║ím ß║⌐n" && stay.isActive === false);
+          statusFilter === "Tất cả" ||
+          (statusFilter === "Đang hoạt động" && stay.isActive !== false) ||
+          (statusFilter === "Tạm ẩn" && stay.isActive === false);
         return matchesSearch && matchesStatus;
       }),
     [search, statusFilter, stays]
@@ -213,7 +118,7 @@ function AdminWorkspace({ onExit }) {
           .toLowerCase();
         return (
           query.includes(search.toLowerCase()) &&
-          (statusFilter === "Tß║Ñt cß║ú" || booking.status === statusFilter)
+          (statusFilter === "Tất cả" || booking.status === statusFilter)
         );
       }),
     [bookings, search, statusFilter]
@@ -232,7 +137,7 @@ function AdminWorkspace({ onExit }) {
     });
     bookings.forEach((booking) => {
       const month = months.find((item) => item.key === booking.createdAt?.slice(0, 7));
-      if (month && booking.status !== "─É├ú hß╗ºy") {
+      if (month && ["Đã xác nhận", "Hoàn tất"].includes(booking.status)) {
         month.amount += Number(booking.totalPrice || 0);
       }
     });
@@ -240,23 +145,30 @@ function AdminWorkspace({ onExit }) {
   }, [bookings]);
 
   const saveCollection = (key, value, setter, message) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
+    if (writeCollection(key, value)) {
       setter(value);
       setToast(message);
-    } catch (error) {
-      console.error(`Kh├┤ng thß╗â l╞░u dß╗» liß╗çu ${key}:`, error);
-      setToast("Kh├┤ng thß╗â l╞░u thay ─æß╗òi. Vui l├▓ng kiß╗âm tra bß╗Ö nhß╗¢ tr├¼nh duyß╗çt.");
+    } else {
+      setToast("Không thể lưu thay đổi. Vui lòng kiểm tra bộ nhớ trình duyệt.");
     }
   };
 
-  const saveStays = (next) =>
-    saveCollection("stayoraManagedStays", next, setStays, "─É├ú cß║¡p nhß║¡t danh s├ích chß╗ù nghß╗ë.");
+  const saveStays = (next) => {
+    const visibleCatalogIds = new Set(next.map((stay) => String(stay.id)));
+    const deletedIds = initialStays
+      .map((stay) => String(stay.id))
+      .filter((id) => !visibleCatalogIds.has(id));
+    if (!writeCollection("stayoraDeletedStayIds", deletedIds)) {
+      setToast("Không thể cập nhật danh sách chỗ nghỉ.");
+      return;
+    }
+    saveCollection("stayoraManagedStays", next, setStays, "Đã cập nhật danh sách chỗ nghỉ.");
+  };
 
   const changePage = (page) => {
     setActivePage(page);
     setSearch("");
-    setStatusFilter("Tß║Ñt cß║ú");
+    setStatusFilter("Tất cả");
     setSidebarOpen(false);
   };
 
@@ -264,47 +176,48 @@ function AdminWorkspace({ onExit }) {
     const next = bookings.map((item) =>
       item.bookingCode === booking.bookingCode ? { ...item, status } : item
     );
-    saveCollection("stayoraBookings", next, setBookings, "─É├ú cß║¡p nhß║¡t trß║íng th├íi ─æß║╖t ph├▓ng.");
+    saveCollection("stayoraBookings", next, setBookings, "Đã cập nhật trạng thái đặt phòng.");
   };
 
   const updateUserRole = (user, role) => {
     const next = users.map((item) =>
       String(item.id) === String(user.id) ? { ...item, role } : item
     );
-    saveCollection("stayoraAccounts", next, setUsers, "─É├ú cß║¡p nhß║¡t quyß╗ün ng╞░ß╗¥i d├╣ng.");
+    saveCollection("stayoraAccounts", next, setUsers, "Đã cập nhật quyền người dùng.");
   };
 
   const saveStay = (form) => {
     const next = stayDialog.mode === "edit"
       ? stays.map((stay) => (String(stay.id) === String(form.id) ? form : stay))
-      : [...stays, { ...form, id: `stay-${Date.now()}`, reviews: 0, isActive: true }];
+      : [...stays, {
+          ...form,
+          id: `stay-${Date.now()}`,
+          ratingBase: Number(form.rating || 0),
+          reviewsBase: 0,
+          reviews: 0,
+          isActive: true,
+        }];
     saveStays(next);
     setStayDialog(null);
   };
 
-  const pageTitle = navigation.find((item) => item.id === activePage)?.label || "Tß╗òng quan";
-  const searchPlaceholder =
-    activePage === "users"
-      ? "T├¼m t├¬n, email hoß║╖c sß╗æ ─æiß╗çn thoß║íi..."
-      : activePage === "bookings"
-        ? "T├¼m m├ú ─æ╞ín, kh├ích hoß║╖c chß╗ù nghß╗ë..."
-        : "T├¼m chß╗ù nghß╗ë, khu vß╗▒c...";
+  const pageTitle = navigation.find((item) => item.id === activePage)?.label || "Tổng quan";
 
   return (
     <div className="admin-shell">
       <aside className={`admin-sidebar${sidebarOpen ? " is-open" : ""}`}>
         <a className="admin-brand" href="/admin" aria-label="Stayora Admin">
-          <span className="admin-brand-mark">Γîé</span>
+          <span className="admin-brand-mark">⌂</span>
           <span>
             <strong>Stayora</strong>
-            <small>Quß║ún trß╗ï vi├¬n</small>
+            <small>Quản trị viên</small>
           </span>
         </a>
         <div className="admin-profile">
-          <span className="admin-avatar">SA</span>
-          <span><strong>Quß║ún trß╗ï vi├¬n</strong><small>Quß║ún l├╜ hß╗ç thß╗æng</small></span>
+          <span className="admin-avatar">TIÊN</span>
+          <span><strong>Quản trị viên</strong><small>Quản lý hệ thống</small></span>
         </div>
-        <nav className="admin-nav" aria-label="─Éiß╗üu h╞░ß╗¢ng quß║ún trß╗ï">
+        <nav className="admin-nav" aria-label="Điều hướng quản trị">
           <span className="admin-nav-caption">MENU</span>
           {navigation.map((item) => (
             <button
@@ -322,13 +235,8 @@ function AdminWorkspace({ onExit }) {
           ))}
         </nav>
         <div className="admin-sidebar-bottom">
-          <div className="admin-help-card">
-            <span>Γ£ª</span>
-            <strong>Stayora Admin</strong>
-            <small>Quß║ún l├╜ kß╗│ nghß╗ë, dß╗à d├áng h╞ín.</small>
-          </div>
           <button className="admin-exit" onClick={onExit} type="button">
-            <span>Γå⌐</span> Vß╗ü trang kh├ích
+            <span>↩</span> Đăng xuất
           </button>
         </div>
       </aside>
@@ -336,7 +244,7 @@ function AdminWorkspace({ onExit }) {
       {sidebarOpen && (
         <button
           className="admin-backdrop"
-          aria-label="─É├│ng menu"
+          aria-label="Đóng menu"
           onClick={() => setSidebarOpen(false)}
           type="button"
         />
@@ -346,28 +254,28 @@ function AdminWorkspace({ onExit }) {
         <header className="admin-topbar">
           <button
             className="admin-menu-toggle"
-            aria-label="Mß╗ƒ menu"
+            aria-label="Mở menu"
             onClick={() => setSidebarOpen(true)}
             type="button"
           >
-            Γÿ░
+            ☰
           </button>
           <div className="admin-breadcrumb"><span>Stayora</span><b>/</b>{pageTitle}</div>
           <div className="admin-topbar-right">
-            <span className="admin-live"><i /> Hß╗ç thß╗æng hoß║ít ─æß╗Öng</span>
-            <span className="admin-top-avatar">SA</span>
+            <span className="admin-live"><i /> Hệ thống hoạt động</span>
+            <span className="admin-top-avatar">TIÊN</span>
           </div>
         </header>
 
         <div className="admin-content">
           <div className="admin-page-heading">
             <div>
-              <p className="admin-eyebrow">STAYORA ┬╖ ─É├Ç Lß║áT</p>
-              <h1>{activePage === "overview" ? "Tß╗òng quan hß╗ç thß╗æng" : pageTitle}</h1>
+              <p className="admin-eyebrow">STAYORA · ĐÀ LẠT</p>
+              <h1>{activePage === "overview" ? "Tổng quan hệ thống" : pageTitle}</h1>
               <p className="admin-subtitle">
                 {activePage === "overview"
-                  ? "Ch├áo mß╗½ng trß╗ƒ lß║íi! ─É├óy l├á t├¼nh h├¼nh hoß║ít ─æß╗Öng cß╗ºa bß║ín."
-                  : `Theo d├╡i v├á quß║ún l├╜ ${pageTitle.toLowerCase()} cß╗ºa Stayora.`}
+                  ? "Chào mừng trở lại! Đây là tình hình hoạt động của bạn."
+                  : `Theo dõi và quản lý ${pageTitle.toLowerCase()} của Stayora.`}
               </p>
             </div>
             <span className="admin-date">{new Date().toLocaleDateString("vi-VN", {
@@ -406,7 +314,7 @@ function AdminWorkspace({ onExit }) {
                 ))
               }
               onDelete={(stay) => {
-                if (window.confirm(`X├│a "${stay.name}" khß╗Åi danh s├ích chß╗ù nghß╗ë?`)) {
+                if (window.confirm(`Xóa "${stay.name}" khỏi danh sách chỗ nghỉ?`)) {
                   saveStays(stays.filter((item) => String(item.id) !== String(stay.id)));
                 }
               }}
@@ -416,6 +324,7 @@ function AdminWorkspace({ onExit }) {
           {activePage === "users" && (
             <UsersPage
               users={filteredUsers}
+              allUsers={users}
               total={users.length}
               search={search}
               setSearch={setSearch}
@@ -447,13 +356,11 @@ function AdminWorkspace({ onExit }) {
             <SettingsPage
               settings={settings}
               onSave={(next) => {
-                try {
-                  localStorage.setItem("stayoraAdminSettings", JSON.stringify(next));
+                if (writeCollection("stayoraAdminSettings", next)) {
                   setSettings(next);
-                  setToast("─É├ú l╞░u c├ái ─æß║╖t hß╗ç thß╗æng.");
-                } catch (error) {
-                  console.error("Kh├┤ng thß╗â l╞░u c├ái ─æß║╖t quß║ún trß╗ï:", error);
-                  setToast("Kh├┤ng thß╗â l╞░u c├ái ─æß║╖t. Vui l├▓ng thß╗¡ lß║íi.");
+                  setToast("Đã lưu cài đặt hệ thống.");
+                } else {
+                  setToast("Không thể lưu cài đặt. Vui lòng thử lại.");
                 }
               }}
             />
@@ -469,28 +376,34 @@ function AdminWorkspace({ onExit }) {
           onSave={saveStay}
         />
       )}
-      {toast && <div className="admin-toast" role="status">Γ£ô {toast}</div>}
+      {toast && <div className="admin-toast" role="status">✓ {toast}</div>}
     </div>
   );
 }
 
 function Overview({ stays, users, bookings, todayBookings, activeStays, monthRevenue, monthlyRevenue, onNavigate }) {
-  const averageRating = stays.length
-    ? (stays.reduce((total, stay) => total + Number(stay.rating || 0), 0) / stays.length).toFixed(1)
-    : "ΓÇö";
+  const totalReviews = stays.reduce((total, stay) => total + Number(stay.reviews || 0), 0);
+  const hostCount = users.filter((user) => user.role === "host").length;
+  const customerCount = users.filter((user) => (user.role || "customer") === "customer").length;
+  const adminCount = users.filter((user) => user.role === "admin").length;
+  const userBreakdown = [
+    `${customerCount} khách`,
+    `${hostCount} chủ nhà`,
+    ...(adminCount ? [`${adminCount} quản trị viên`] : []),
+  ].join(" · ");
   const metrics = [
-    { icon: "Γîé", value: stays.length, label: "Tß╗òng homestay", note: `${activeStays.length} ─æang hoß║ít ─æß╗Öng`, tone: "green", page: "stays" },
-    { icon: "ΓÖÖ", value: users.length.toLocaleString("vi-VN"), label: "Tß╗òng ng╞░ß╗¥i d├╣ng", note: "T├ái khoß║ún ─æ├ú ─æ─âng k├╜", tone: "purple", page: "users" },
-    { icon: "Γûú", value: todayBookings.length, label: "─Éß║╖t ph├▓ng h├┤m nay", note: `${bookings.length} ─æ╞ín tß║Ñt cß║ú`, tone: "orange", page: "bookings" },
-    { icon: "Γåù", value: currency(monthRevenue), label: "Doanh thu th├íng n├áy", note: "─É╞ín ch╞░a bß╗ï hß╗ºy", tone: "orange", page: "revenue" },
-    { icon: "Γ£ô", value: `${activeStays.length}/${stays.length}`, label: "─Éang hoß║ít ─æß╗Öng", note: "Chß╗ù nghß╗ë hiß╗ân thß╗ï", tone: "green", page: "stays" },
-    { icon: "Γÿà", value: `${averageRating} Γÿà`, label: "─É├ính gi├í trung b├¼nh", note: "Tr├¬n tß║Ñt cß║ú chß╗ù nghß╗ë", tone: "yellow", page: "stays" },
+    { icon: "⌂", value: stays.length, label: "Tổng homestay", note: `${activeStays.length} đang hoạt động`, tone: "green", page: "stays" },
+    { icon: "♙", value: users.length.toLocaleString("vi-VN"), label: "Tổng người dùng", note: userBreakdown, tone: "purple", page: "users" },
+    { icon: "▣", value: todayBookings.length, label: "Đặt phòng hôm nay", note: `${bookings.length} đơn tất cả`, tone: "orange", page: "bookings" },
+    { icon: "↗", value: currency(monthRevenue), label: "Doanh thu tháng này", note: "Đơn đã xác nhận hoặc hoàn tất", tone: "orange", page: "revenue" },
+    { icon: "✓", value: `${activeStays.length}/${stays.length}`, label: "Đang hoạt động", note: "Chỗ nghỉ hiển thị", tone: "green", page: "stays" },
+    { icon: "★", value: totalReviews.toLocaleString("vi-VN"), label: "Tổng lượt đánh giá", note: "Tổng trên các chỗ nghỉ", tone: "yellow", page: "stays" },
   ];
   const maxRevenue = Math.max(1, ...monthlyRevenue.map((month) => month.amount));
 
   return (
     <>
-      <section className="admin-metric-grid" aria-label="Chß╗ë sß╗æ hß╗ç thß╗æng">
+      <section className="admin-metric-grid" aria-label="Chỉ số hệ thống">
         {metrics.map((metric) => (
           <button
             className="admin-metric-card"
@@ -509,9 +422,9 @@ function Overview({ stays, users, bookings, todayBookings, activeStays, monthRev
       <section className="admin-overview-grid">
         <div className="admin-panel admin-chart-panel">
           <div className="admin-panel-heading">
-            <div><h2>Doanh thu</h2><p>Tß╗òng quan 6 th├íng gß║ºn nhß║Ñt</p></div>
+            <div><h2>Doanh thu</h2><p>Tổng quan 6 tháng gần nhất</p></div>
             <button className="admin-text-button" onClick={() => onNavigate("revenue")} type="button">
-              Chi tiß║┐t <span>ΓåÆ</span>
+              Chi tiết <span>→</span>
             </button>
           </div>
           <div className="admin-chart">
@@ -530,9 +443,9 @@ function Overview({ stays, users, bookings, todayBookings, activeStays, monthRev
         </div>
         <div className="admin-panel admin-activity-panel">
           <div className="admin-panel-heading">
-            <div><h2>─Éß║╖t ph├▓ng gß║ºn ─æ├óy</h2><p>Cß║¡p nhß║¡t mß╗¢i nhß║Ñt</p></div>
+            <div><h2>Đặt phòng gần đây</h2><p>Cập nhật mới nhất</p></div>
             <button className="admin-text-button" onClick={() => onNavigate("bookings")} type="button">
-              Tß║Ñt cß║ú <span>ΓåÆ</span>
+              Tất cả <span>→</span>
             </button>
           </div>
           {bookings.length ? (
@@ -540,33 +453,33 @@ function Overview({ stays, users, bookings, todayBookings, activeStays, monthRev
               {[...bookings].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4).map((booking) => (
                 <div className="admin-activity-item" key={booking.bookingCode}>
                   <span className="admin-activity-dot" />
-                  <div><strong>{booking.customer?.name || "Kh├ích h├áng"}</strong><p>{booking.stay?.name || "Chß╗ù nghß╗ë"} ┬╖ {formatDate(booking.createdAt)}</p></div>
+                  <div><strong>{booking.customer?.name || "Khách hàng"}</strong><p>{booking.stay?.name || "Chỗ nghỉ"} · {formatDate(booking.createdAt)}</p></div>
                   <b>{currency(booking.totalPrice)}</b>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="admin-empty-small"><span>Γûú</span><strong>Ch╞░a c├│ ─æß║╖t ph├▓ng</strong><p>─É╞ín ─æß║╖t ph├▓ng mß╗¢i sß║╜ xuß║Ñt hiß╗çn tß║íi ─æ├óy.</p></div>
+            <div className="admin-empty-small"><span>▣</span><strong>Chưa có đặt phòng</strong><p>Đơn đặt phòng mới sẽ xuất hiện tại đây.</p></div>
           )}
         </div>
       </section>
 
       <section className="admin-panel admin-top-stays">
         <div className="admin-panel-heading">
-          <div><h2>Homestay nß╗òi bß║¡t</h2><p>C├íc chß╗ù nghß╗ë ─æ╞░ß╗úc ─æ├ính gi├í cao</p></div>
+          <div><h2>Homestay nổi bật</h2><p>Các chỗ nghỉ được đánh giá cao</p></div>
           <button className="admin-text-button" onClick={() => onNavigate("stays")} type="button">
-            Quß║ún l├╜ homestay <span>ΓåÆ</span>
+            Quản lý homestay <span>→</span>
           </button>
         </div>
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>Chß╗ù nghß╗ë</th><th>Khu vß╗▒c</th><th>Chß╗º nh├á</th><th>Ph├▓ng</th><th>─É├ính gi├í</th><th>Gi├í / ─æ├¬m</th><th>Trß║íng th├íi</th></tr></thead>
+            <thead><tr><th>Chỗ nghỉ</th><th>Khu vực</th><th>Chủ nhà</th><th>Phòng</th><th>Đánh giá</th><th>Giá / đêm</th><th>Trạng thái</th></tr></thead>
             <tbody>
               {[...stays].sort((a, b) => Number(b.rating) - Number(a.rating)).slice(0, 5).map((stay) => (
                 <tr key={stay.id}>
                   <td><div className="admin-property-cell"><img src={stay.image} alt="" /><strong>{stay.name}</strong></div></td>
-                  <td>{stay.area}</td><td>{stay.owner || "ΓÇö"}</td><td>{stay.rooms?.length || 0}</td>
-                  <td><span className="admin-rating">Γÿà {Number(stay.rating || 0).toFixed(1)}</span></td>
+                  <td>{stay.area}</td><td>{stay.owner || "—"}</td><td>{stay.rooms?.length || 0}</td>
+                  <td><span className="admin-rating">★ {Number(stay.rating || 0).toFixed(1)}</span></td>
                   <td>{currency(stay.price)}</td>
                   <td><StatusBadge active={stay.isActive !== false} /></td>
                 </tr>
@@ -583,7 +496,7 @@ function PageToolbar({ search, setSearch, placeholder, filter }) {
   return (
     <div className="admin-toolbar">
       <label className="admin-search">
-        <span>Γîò</span>
+        <span>⌕</span>
         <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={placeholder} />
       </label>
       {filter}
@@ -594,32 +507,32 @@ function PageToolbar({ search, setSearch, placeholder, filter }) {
 function StaysPage({ stays, total, search, setSearch, statusFilter, setStatusFilter, onAdd, onEdit, onToggle, onDelete }) {
   return (
     <>
-      <div className="admin-summary-row"><p><strong>{total}</strong> chß╗ù nghß╗ë trong hß╗ç thß╗æng</p><button className="admin-primary-button" onClick={onAdd} type="button"><span>∩╝ï</span> Th├¬m chß╗ù nghß╗ë</button></div>
+      <div className="admin-summary-row"><p><strong>{total}</strong> chỗ nghỉ trong hệ thống</p><button className="admin-primary-button" onClick={onAdd} type="button"><span>＋</span> Thêm chỗ nghỉ</button></div>
       <PageToolbar
         search={search}
         setSearch={setSearch}
-        placeholder="T├¼m t├¬n chß╗ù nghß╗ë, khu vß╗▒c, chß╗º nh├á..."
-        filter={<select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option>Tß║Ñt cß║ú</option><option>─Éang hoß║ít ─æß╗Öng</option><option>Tß║ím ß║⌐n</option></select>}
+        placeholder="Tìm tên chỗ nghỉ, khu vực, chủ nhà..."
+        filter={<select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option>Tất cả</option><option>Đang hoạt động</option><option>Tạm ẩn</option></select>}
       />
       <div className="admin-panel admin-list-panel">
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>Chß╗ù nghß╗ë</th><th>Khu vß╗▒c</th><th>Loß║íi</th><th>Chß╗º nh├á</th><th>Gi├í / ─æ├¬m</th><th>─É├ính gi├í</th><th>Trß║íng th├íi</th><th>Thao t├íc</th></tr></thead>
+            <thead><tr><th>Chỗ nghỉ</th><th>Khu vực</th><th>Loại</th><th>Chủ nhà</th><th>Giá / đêm</th><th>Đánh giá</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
             <tbody>
               {stays.map((stay) => (
                 <tr key={stay.id}>
                   <td><div className="admin-property-cell"><img src={stay.image} alt="" /><strong>{stay.name}</strong></div></td>
-                  <td>{stay.area}</td><td>{stay.type}</td><td>{stay.owner || "ΓÇö"}</td>
-                  <td>{currency(stay.price)}</td><td><span className="admin-rating">Γÿà {Number(stay.rating || 0).toFixed(1)}</span></td>
+                  <td>{stay.area}</td><td>{stay.type}</td><td>{stay.owner || "—"}</td>
+                  <td>{currency(stay.price)}</td><td><span className="admin-rating">★ {Number(stay.rating || 0).toFixed(1)}</span></td>
                   <td><StatusBadge active={stay.isActive !== false} /></td>
                   <td><div className="admin-row-actions">
-                    <button aria-label={`Sß╗¡a ${stay.name}`} title="Chß╗ënh sß╗¡a" onClick={() => onEdit(stay)} type="button">Γ£Ä</button>
-                    <button aria-label={stay.isActive === false ? "Hiß╗çn chß╗ù nghß╗ë" : "ß║¿n chß╗ù nghß╗ë"} title={stay.isActive === false ? "Hiß╗çn" : "ß║¿n"} onClick={() => onToggle(stay)} type="button">{stay.isActive === false ? "Γùë" : "Γèÿ"}</button>
-                    <button className="danger" aria-label={`X├│a ${stay.name}`} title="X├│a" onClick={() => onDelete(stay)} type="button">Γî½</button>
+                    <button aria-label={`Sửa ${stay.name}`} title="Chỉnh sửa" onClick={() => onEdit(stay)} type="button">✎</button>
+                    <button aria-label={stay.isActive === false ? "Hiện chỗ nghỉ" : "Ẩn chỗ nghỉ"} title={stay.isActive === false ? "Hiện" : "Ẩn"} onClick={() => onToggle(stay)} type="button">{stay.isActive === false ? "◉" : "⊘"}</button>
+                    <button className="danger" aria-label={`Xóa ${stay.name}`} title="Xóa" onClick={() => onDelete(stay)} type="button">⌫</button>
                   </div></td>
                 </tr>
               ))}
-              {!stays.length && <EmptyRow columns={8} message="Kh├┤ng t├¼m thß║Ñy chß╗ù nghß╗ë ph├╣ hß╗úp." />}
+              {!stays.length && <EmptyRow columns={8} message="Không tìm thấy chỗ nghỉ phù hợp." />}
             </tbody>
           </table>
         </div>
@@ -628,25 +541,27 @@ function StaysPage({ stays, total, search, setSearch, statusFilter, setStatusFil
   );
 }
 
-function UsersPage({ users, total, search, setSearch, onRoleChange }) {
+function UsersPage({ users, allUsers, total, search, setSearch, onRoleChange }) {
+  const demoCustomers = allUsers.filter((user) => user.isDemo && !user.isDemoHost).length;
+  const demoHosts = allUsers.filter((user) => user.isDemoHost && user.role === "host").length;
   return (
     <>
-      <div className="admin-summary-row"><p><strong>{total}</strong> t├ái khoß║ún ─æ├ú ─æ─âng k├╜</p><span className="admin-readonly-note">T├ái khoß║ún ─æ╞░ß╗úc tß║ío tß╗½ trang ─æ─âng k├╜ Stayora</span></div>
-      <PageToolbar search={search} setSearch={setSearch} placeholder="T├¼m t├¬n, email hoß║╖c sß╗æ ─æiß╗çn thoß║íi..." />
+      <div className="admin-summary-row"><p><strong>{total}</strong> tài khoản</p><span className="admin-readonly-note">Gồm {demoCustomers} khách mẫu, {demoHosts} chủ nhà mẫu và người dùng đăng ký trên Stayora</span></div>
+      <PageToolbar search={search} setSearch={setSearch} placeholder="Tìm tên, email hoặc số điện thoại..." />
       <div className="admin-panel admin-list-panel">
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>Ng╞░ß╗¥i d├╣ng</th><th>Sß╗æ ─æiß╗çn thoß║íi</th><th>Ng├áy tham gia</th><th>X├íc thß╗▒c email</th><th>Vai tr├▓</th></tr></thead>
+            <thead><tr><th>Người dùng</th><th>Số điện thoại</th><th>Chỗ nghỉ quản lý</th><th>Ngày tham gia</th><th>Xác thực email</th><th>Vai trò</th></tr></thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td><div className="admin-user-cell"><span>{(user.fullName || "U").trim().charAt(0).toUpperCase()}</span><div><strong>{user.fullName || "Ch╞░a cß║¡p nhß║¡t"}</strong><small>{user.email || "ΓÇö"}</small></div></div></td>
-                  <td>{user.phone || "ΓÇö"}</td><td>{formatDate(user.createdAt || user.id)}</td>
-                  <td><StatusBadge active={user.emailVerified !== false} label={user.emailVerified === false ? "Ch╞░a x├íc thß╗▒c" : "─É├ú x├íc thß╗▒c"} /></td>
-                  <td><select className="admin-role-select" aria-label={`Vai tr├▓ ${user.fullName || user.email}`} value={user.role || "customer"} onChange={(event) => onRoleChange(user, event.target.value)}><option value="customer">Kh├ích h├áng</option><option value="host">Chß╗º nh├á</option><option value="admin">Quß║ún trß╗ï vi├¬n</option></select></td>
+                  <td><div className="admin-user-cell"><span>{(user.fullName || "U").trim().charAt(0).toUpperCase()}</span><div><strong>{user.fullName || "Chưa cập nhật"}{user.isDemo && <small className="admin-demo-tag"> · Demo</small>}</strong><small>{user.email || "—"}</small></div></div></td>
+                  <td>{user.phone || "—"}</td><td>{user.isDemoHost ? user.hostedStayName : "—"}</td><td>{formatDate(user.createdAt || user.id)}</td>
+                  <td><StatusBadge active={user.emailVerified !== false} label={user.emailVerified === false ? "Chưa xác thực" : "Đã xác thực"} /></td>
+                  <td><select className="admin-role-select" aria-label={`Vai trò ${user.fullName || user.email}`} value={user.role || "customer"} onChange={(event) => onRoleChange(user, event.target.value)}><option value="customer">Khách hàng</option><option value="host">Chủ nhà</option><option value="admin">Quản trị viên</option></select></td>
                 </tr>
               ))}
-              {!users.length && <EmptyRow columns={5} message={search ? "Kh├┤ng t├¼m thß║Ñy ng╞░ß╗¥i d├╣ng ph├╣ hß╗úp." : "Ch╞░a c├│ t├ái khoß║ún n├áo. Ng╞░ß╗¥i d├╣ng ─æ─âng k├╜ tr├¬n Stayora sß║╜ xuß║Ñt hiß╗çn tß║íi ─æ├óy."} />}
+              {!users.length && <EmptyRow columns={6} message={search ? "Không tìm thấy người dùng phù hợp." : "Chưa có tài khoản nào. Người dùng đăng ký trên Stayora sẽ xuất hiện tại đây."} />}
             </tbody>
           </table>
         </div>
@@ -658,29 +573,29 @@ function UsersPage({ users, total, search, setSearch, onRoleChange }) {
 function BookingsPage({ bookings, total, search, setSearch, statusFilter, setStatusFilter, onStatusChange }) {
   return (
     <>
-      <div className="admin-summary-row"><p><strong>{total}</strong> ─æ╞ín ─æß║╖t ph├▓ng</p><span className="admin-readonly-note">Thay ─æß╗òi trß║íng th├íi sß║╜ ─æß╗ông bß╗Ö vß╗¢i lß╗ïch sß╗¡ cß╗ºa kh├ích</span></div>
+      <div className="admin-summary-row"><p><strong>{total}</strong> đơn đặt phòng</p><span className="admin-readonly-note">Thay đổi trạng thái sẽ đồng bộ với lịch sử của khách</span></div>
       <PageToolbar
         search={search}
         setSearch={setSearch}
-        placeholder="T├¼m m├ú ─æ╞ín, kh├ích h├áng hoß║╖c chß╗ù nghß╗ë..."
-        filter={<select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option>Tß║Ñt cß║ú</option><option>─É├ú x├íc nhß║¡n</option><option>Chß╗¥ x├íc nhß║¡n</option><option>─É├ú hß╗ºy</option></select>}
+        placeholder="Tìm mã đơn, khách hàng hoặc chỗ nghỉ..."
+        filter={<select className="admin-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}><option>Tất cả</option><option>Chờ xác nhận</option><option>Đã xác nhận</option><option>Hoàn tất</option><option>Đã hủy</option></select>}
       />
       <div className="admin-panel admin-list-panel">
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>M├ú ─æß║╖t ph├▓ng</th><th>Kh├ích h├áng</th><th>Chß╗ù nghß╗ë</th><th>Thß╗¥i gian</th><th>Tß╗òng tiß╗ün</th><th>Ng├áy ─æß║╖t</th><th>Trß║íng th├íi</th></tr></thead>
+            <thead><tr><th>Mã đặt phòng</th><th>Khách hàng</th><th>Chỗ nghỉ</th><th>Thời gian</th><th>Tổng tiền</th><th>Ngày đặt</th><th>Trạng thái</th></tr></thead>
             <tbody>
               {[...bookings].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((booking, index) => (
                 <tr key={booking.bookingCode || index}>
                   <td><strong className="admin-booking-code">{booking.bookingCode || `STY-${index + 1}`}</strong></td>
-                  <td><strong>{booking.customer?.name || "Kh├ích h├áng"}</strong><small className="admin-cell-secondary">{booking.customer?.phone || booking.customer?.email || ""}</small></td>
-                  <td>{booking.stay?.name || "Chß╗ù nghß╗ë"}<small className="admin-cell-secondary">{booking.selectedRoom || ""}</small></td>
-                  <td>{formatDate(booking.checkIn)} ΓÇô {formatDate(booking.checkOut)}</td>
+                  <td><strong>{booking.customer?.name || "Khách hàng"}</strong><small className="admin-cell-secondary">{booking.customer?.phone || booking.customer?.email || ""}</small></td>
+                  <td>{booking.stay?.name || "Chỗ nghỉ"}<small className="admin-cell-secondary">{booking.selectedRoom || ""}</small></td>
+                  <td>{formatDate(booking.checkIn)} – {formatDate(booking.checkOut)}</td>
                   <td><strong>{currency(booking.totalPrice)}</strong></td><td>{formatDate(booking.createdAt)}</td>
-                  <td><select className={`admin-status-select ${statusClass(booking.status)}`} aria-label={`Trß║íng th├íi ─æ╞ín ${booking.bookingCode}`} value={booking.status || "Chß╗¥ x├íc nhß║¡n"} onChange={(event) => onStatusChange(booking, event.target.value)}><option>Chß╗¥ x├íc nhß║¡n</option><option>─É├ú x├íc nhß║¡n</option><option>─É├ú hß╗ºy</option></select></td>
+                  <td><select className={`admin-status-select ${statusClass(booking.status)}`} aria-label={`Trạng thái đơn ${booking.bookingCode}`} value={booking.status || "Chờ xác nhận"} onChange={(event) => onStatusChange(booking, event.target.value)}><option>Chờ xác nhận</option><option>Đã xác nhận</option><option>Hoàn tất</option><option>Đã hủy</option></select></td>
                 </tr>
               ))}
-              {!bookings.length && <EmptyRow columns={7} message={search ? "Kh├┤ng t├¼m thß║Ñy ─æ╞ín ─æß║╖t ph├▓ng ph├╣ hß╗úp." : "Ch╞░a c├│ ─æ╞ín ─æß║╖t ph├▓ng. ─É╞ín mß╗¢i sß║╜ tß╗▒ ─æß╗Öng hiß╗ân thß╗ï tß║íi ─æ├óy."} />}
+              {!bookings.length && <EmptyRow columns={7} message={search ? "Không tìm thấy đơn đặt phòng phù hợp." : "Chưa có đơn đặt phòng. Đơn mới sẽ tự động hiển thị tại đây."} />}
             </tbody>
           </table>
         </div>
@@ -690,7 +605,7 @@ function BookingsPage({ bookings, total, search, setSearch, statusFilter, setSta
 }
 
 function RevenuePage({ bookings, revenue, monthlyRevenue }) {
-  const completed = bookings.filter((booking) => booking.status !== "─É├ú hß╗ºy");
+  const completed = bookings.filter((booking) => ["Đã xác nhận", "Hoàn tất"].includes(booking.status));
   const average = completed.length
     ? completed.reduce((sum, booking) => sum + Number(booking.totalPrice || 0), 0) / completed.length
     : 0;
@@ -698,12 +613,12 @@ function RevenuePage({ bookings, revenue, monthlyRevenue }) {
   return (
     <>
       <div className="admin-revenue-cards">
-        <div className="admin-panel admin-revenue-card"><span>DOANH THU TH├üNG N├ÇY</span><strong>{currency(revenue)}</strong><small>T├¡nh tß╗½ c├íc ─æ╞ín ch╞░a bß╗ï hß╗ºy</small></div>
-        <div className="admin-panel admin-revenue-card"><span>─É╞áN Hß╗óP Lß╗å</span><strong>{completed.length}</strong><small>Tß╗òng ─æ╞ín kh├┤ng ß╗ƒ trß║íng th├íi ─æ├ú hß╗ºy</small></div>
-        <div className="admin-panel admin-revenue-card"><span>GI├ü TRß╗è TRUNG B├îNH</span><strong>{currency(average)}</strong><small>Tr├¬n mß╗ùi ─æ╞ín hß╗úp lß╗ç</small></div>
+        <div className="admin-panel admin-revenue-card"><span>DOANH THU THÁNG NÀY</span><strong>{currency(revenue)}</strong><small>Tính từ các đơn chưa bị hủy</small></div>
+        <div className="admin-panel admin-revenue-card"><span>ĐƠN HỢP LỆ</span><strong>{completed.length}</strong><small>Đơn đã xác nhận hoặc hoàn tất</small></div>
+        <div className="admin-panel admin-revenue-card"><span>GIÁ TRỊ TRUNG BÌNH</span><strong>{currency(average)}</strong><small>Trên mỗi đơn hợp lệ</small></div>
       </div>
       <div className="admin-panel admin-revenue-chart-panel">
-        <div className="admin-panel-heading"><div><h2>Biß╗âu ─æß╗ô doanh thu</h2><p>Doanh thu ghi nhß║¡n theo th├íng, 6 th├íng gß║ºn nhß║Ñt</p></div><span className="admin-chart-legend"><i /> Doanh thu</span></div>
+        <div className="admin-panel-heading"><div><h2>Biểu đồ doanh thu</h2><p>Doanh thu ghi nhận theo tháng, 6 tháng gần nhất</p></div><span className="admin-chart-legend"><i /> Doanh thu</span></div>
         <div className="admin-chart admin-large-chart">
           {monthlyRevenue.map((month) => (
             <div className="admin-chart-column" key={month.key}>
@@ -715,12 +630,12 @@ function RevenuePage({ bookings, revenue, monthlyRevenue }) {
         </div>
       </div>
       <div className="admin-panel admin-list-panel">
-        <div className="admin-panel-heading"><div><h2>─Éß╗æi so├ít ─æ╞ín h├áng</h2><p>Chi tiß║┐t c├íc khoß║ún doanh thu ph├ít sinh</p></div></div>
+        <div className="admin-panel-heading"><div><h2>Đối soát đơn hàng</h2><p>Chi tiết các khoản doanh thu phát sinh</p></div></div>
         <div className="admin-table-wrap"><table className="admin-table">
-          <thead><tr><th>M├ú ─æß║╖t ph├▓ng</th><th>Kh├ích h├áng</th><th>Chß╗ù nghß╗ë</th><th>Ng├áy ─æß║╖t</th><th>Trß║íng th├íi</th><th>Doanh thu</th></tr></thead>
-          <tbody>{bookings.filter((booking) => booking.status !== "─É├ú hß╗ºy").map((booking, index) => (
-            <tr key={booking.bookingCode || index}><td><strong className="admin-booking-code">{booking.bookingCode || `STY-${index + 1}`}</strong></td><td>{booking.customer?.name || "Kh├ích h├áng"}</td><td>{booking.stay?.name || "Chß╗ù nghß╗ë"}</td><td>{formatDate(booking.createdAt)}</td><td><StatusBadge active label={booking.status || "─É├ú x├íc nhß║¡n"} /></td><td><strong>{currency(booking.totalPrice)}</strong></td></tr>
-          ))}{!completed.length && <EmptyRow columns={6} message="Ch╞░a c├│ doanh thu ─æß╗â ─æß╗æi so├ít." />}</tbody>
+          <thead><tr><th>Mã đặt phòng</th><th>Khách hàng</th><th>Chỗ nghỉ</th><th>Ngày đặt</th><th>Trạng thái</th><th>Doanh thu</th></tr></thead>
+          <tbody>{bookings.filter((booking) => ["Đã xác nhận", "Hoàn tất"].includes(booking.status)).map((booking, index) => (
+            <tr key={booking.bookingCode || index}><td><strong className="admin-booking-code">{booking.bookingCode || `STY-${index + 1}`}</strong></td><td>{booking.customer?.name || "Khách hàng"}</td><td>{booking.stay?.name || "Chỗ nghỉ"}</td><td>{formatDate(booking.createdAt)}</td><td><StatusBadge active label={booking.status || "Đã xác nhận"} /></td><td><strong>{currency(booking.totalPrice)}</strong></td></tr>
+          ))}{!completed.length && <EmptyRow columns={6} message="Chưa có doanh thu để đối soát." />}</tbody>
         </table></div>
       </div>
     </>
@@ -734,17 +649,17 @@ function SettingsPage({ settings, onSave }) {
   return (
     <form className="admin-settings-layout" onSubmit={(event) => { event.preventDefault(); onSave(draft); }}>
       <section className="admin-panel admin-settings-panel">
-        <div className="admin-panel-heading"><div><h2>Th├┤ng tin hß╗ç thß╗æng</h2><p>Th├┤ng tin li├¬n hß╗ç hiß╗ân thß╗ï tr├¬n Stayora</p></div></div>
-        <label className="admin-field"><span>T├¬n th╞░╞íng hiß╗çu</span><input required value={draft.brandName} onChange={(event) => update("brandName", event.target.value)} /></label>
-        <label className="admin-field"><span>Email hß╗ù trß╗ú</span><input required type="email" value={draft.contactEmail} onChange={(event) => update("contactEmail", event.target.value)} /></label>
-        <label className="admin-field"><span>Sß╗æ ─æiß╗çn thoß║íi hß╗ù trß╗ú</span><input required value={draft.contactPhone} onChange={(event) => update("contactPhone", event.target.value)} /></label>
+        <div className="admin-panel-heading"><div><h2>Thông tin hệ thống</h2><p>Thông tin liên hệ hiển thị trên Stayora</p></div></div>
+        <label className="admin-field"><span>Tên thương hiệu</span><input required value={draft.brandName} onChange={(event) => update("brandName", event.target.value)} /></label>
+        <label className="admin-field"><span>Email hỗ trợ</span><input required type="email" value={draft.contactEmail} onChange={(event) => update("contactEmail", event.target.value)} /></label>
+        <label className="admin-field"><span>Số điện thoại hỗ trợ</span><input required value={draft.contactPhone} onChange={(event) => update("contactPhone", event.target.value)} /></label>
       </section>
       <section className="admin-panel admin-settings-panel">
-        <div className="admin-panel-heading"><div><h2>Th├┤ng b├ío</h2><p>T├╣y chß╗ënh c├ích nhß║¡n th├┤ng tin ─æ╞ín mß╗¢i</p></div></div>
-        <label className="admin-toggle-setting"><span><strong>Th├┤ng b├ío ─æß║╖t ph├▓ng mß╗¢i</strong><small>Nhß║¡n th├┤ng b├ío khi c├│ ─æ╞ín mß╗¢i tr├¬n hß╗ç thß╗æng</small></span><input type="checkbox" checked={draft.bookingNotifications} onChange={(event) => update("bookingNotifications", event.target.checked)} /></label>
-        <div className="admin-settings-note"><span>i</span><p>C├íc thay ─æß╗òi ─æ╞░ß╗úc l╞░u trong tr├¼nh duyß╗çt n├áy v├á ├íp dß╗Ñng ngay cho phi├¬n quß║ún trß╗ï.</p></div>
+        <div className="admin-panel-heading"><div><h2>Thông báo</h2><p>Tùy chỉnh cách nhận thông tin đơn mới</p></div></div>
+        <label className="admin-toggle-setting"><span><strong>Thông báo đặt phòng mới</strong><small>Nhận thông báo khi có đơn mới trên hệ thống</small></span><input type="checkbox" checked={draft.bookingNotifications} onChange={(event) => update("bookingNotifications", event.target.checked)} /></label>
+        <div className="admin-settings-note"><span>i</span><p>Các thay đổi được lưu trong trình duyệt này và áp dụng ngay cho phiên quản trị.</p></div>
       </section>
-      <div className="admin-settings-actions"><button className="admin-primary-button" type="submit">L╞░u c├ái ─æß║╖t</button></div>
+      <div className="admin-settings-actions"><button className="admin-primary-button" type="submit">Lưu cài đặt</button></div>
     </form>
   );
 }
@@ -752,13 +667,13 @@ function SettingsPage({ settings, onSave }) {
 function StayDialog({ mode, stay, onClose, onSave }) {
   const [form, setForm] = useState(() => stay || {
     name: "",
-    area: "Trung t├óm ─É├á Lß║ít",
+    area: "Trung tâm Đà Lạt",
     type: "Homestay",
     price: "",
     rating: "5",
     image: "",
     owner: "",
-    rooms: ["Ph├▓ng Standard"],
+    rooms: ["Phòng Standard"],
     amenities: ["WiFi"],
     isActive: true,
   });
@@ -767,7 +682,7 @@ function StayDialog({ mode, stay, onClose, onSave }) {
   const submit = (event) => {
     event.preventDefault();
     if (!form.name.trim() || !form.owner.trim() || !Number(form.price) || !form.area.trim()) {
-      setError("Vui l├▓ng nhß║¡p ─æß║ºy ─æß╗º t├¬n, chß╗º nh├á, khu vß╗▒c v├á gi├í hß╗úp lß╗ç.");
+      setError("Vui lòng nhập đầy đủ tên, chủ nhà, khu vực và giá hợp lệ.");
       return;
     }
     onSave({ ...form, price: Number(form.price), rating: Number(form.rating || 0) });
@@ -775,34 +690,35 @@ function StayDialog({ mode, stay, onClose, onSave }) {
   return (
     <div className="admin-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <form className="admin-modal" onSubmit={submit}>
-        <div className="admin-modal-heading"><div><p className="admin-eyebrow">QUß║óN L├¥ CHß╗û NGHß╗ê</p><h2>{mode === "edit" ? "Chß╗ënh sß╗¡a homestay" : "Th├¬m chß╗ù nghß╗ë mß╗¢i"}</h2></div><button aria-label="─É├│ng" onClick={onClose} type="button">├ù</button></div>
+        <div className="admin-modal-heading"><div><p className="admin-eyebrow">QUẢN LÝ CHỖ NGHỈ</p><h2>{mode === "edit" ? "Chỉnh sửa homestay" : "Thêm chỗ nghỉ mới"}</h2></div><button aria-label="Đóng" onClick={onClose} type="button">×</button></div>
         <div className="admin-modal-grid">
-          <label className="admin-field"><span>T├¬n chß╗ù nghß╗ë *</span><input autoFocus value={form.name} onChange={(event) => update("name", event.target.value)} /></label>
-          <label className="admin-field"><span>Chß╗º nh├á *</span><input value={form.owner || ""} onChange={(event) => update("owner", event.target.value)} /></label>
-          <label className="admin-field"><span>Khu vß╗▒c *</span><select value={form.area} onChange={(event) => update("area", event.target.value)}><option>Trung t├óm ─É├á Lß║ít</option><option>Hß╗ô Xu├ón H╞░╞íng</option><option>Chß╗ú ─É├á Lß║ít</option><option>Trß║íi M├ít</option><option>T├á Nung</option></select></label>
-          <label className="admin-field"><span>Loß║íi chß╗ù nghß╗ë</span><select value={form.type} onChange={(event) => update("type", event.target.value)}><option>Homestay</option><option>Villa</option><option>Kh├ích sß║ín</option></select></label>
-          <label className="admin-field"><span>Gi├í mß╗ùi ─æ├¬m (VN─É) *</span><input min="1" type="number" value={form.price} onChange={(event) => update("price", event.target.value)} /></label>
-          <label className="admin-field"><span>─É├ính gi├í</span><input min="0" max="5" step="0.1" type="number" value={form.rating} onChange={(event) => update("rating", event.target.value)} /></label>
-          <label className="admin-field admin-field-full"><span>ß║ónh ─æß║íi diß╗çn (URL)</span><input type="url" value={form.image || ""} onChange={(event) => update("image", event.target.value)} placeholder="https://..." /></label>
+          <label className="admin-field"><span>Tên chỗ nghỉ *</span><input autoFocus value={form.name} onChange={(event) => update("name", event.target.value)} /></label>
+          <label className="admin-field"><span>Chủ nhà *</span><input value={form.owner || ""} onChange={(event) => update("owner", event.target.value)} /></label>
+          <label className="admin-field"><span>Khu vực *</span><select value={form.area} onChange={(event) => update("area", event.target.value)}><option>Trung tâm Đà Lạt</option><option>Hồ Xuân Hương</option><option>Chợ Đà Lạt</option><option>Trại Mát</option><option>Tà Nung</option></select></label>
+          <label className="admin-field"><span>Loại chỗ nghỉ</span><select value={form.type} onChange={(event) => update("type", event.target.value)}><option>Homestay</option><option>Villa</option><option>Khách sạn</option></select></label>
+          <label className="admin-field"><span>Giá mỗi đêm (VNĐ) *</span><input min="1" type="number" value={form.price} onChange={(event) => update("price", event.target.value)} /></label>
+          <label className="admin-field"><span>Đánh giá</span><input min="0" max="5" step="0.1" type="number" value={form.rating} onChange={(event) => update("rating", event.target.value)} /></label>
+          <label className="admin-field admin-field-full"><span>Ảnh đại diện (URL)</span><input type="url" value={form.image || ""} onChange={(event) => update("image", event.target.value)} placeholder="https://..." /></label>
         </div>
         {error && <p className="admin-form-error" role="alert">{error}</p>}
-        <div className="admin-modal-actions"><button className="admin-secondary-button" onClick={onClose} type="button">Hß╗ºy</button><button className="admin-primary-button" type="submit">{mode === "edit" ? "L╞░u thay ─æß╗òi" : "Th├¬m chß╗ù nghß╗ë"}</button></div>
+        <div className="admin-modal-actions"><button className="admin-secondary-button" onClick={onClose} type="button">Hủy</button><button className="admin-primary-button" type="submit">{mode === "edit" ? "Lưu thay đổi" : "Thêm chỗ nghỉ"}</button></div>
       </form>
     </div>
   );
 }
 
 function StatusBadge({ active, label }) {
-  return <span className={`admin-badge ${active ? "success" : "muted"}`}><i />{label || (active ? "─Éang hoß║ít ─æß╗Öng" : "Tß║ím ß║⌐n")}</span>;
+  return <span className={`admin-badge ${active ? "success" : "muted"}`}><i />{label || (active ? "Đang hoạt động" : "Tạm ẩn")}</span>;
 }
 
 function EmptyRow({ columns, message }) {
-  return <tr><td className="admin-empty-row" colSpan={columns}><span>Γîò</span><strong>{message}</strong></td></tr>;
+  return <tr><td className="admin-empty-row" colSpan={columns}><span>⌕</span><strong>{message}</strong></td></tr>;
 }
 
 function statusClass(status = "") {
-  if (status === "─É├ú x├íc nhß║¡n") return "confirmed";
-  if (status === "─É├ú hß╗ºy") return "cancelled";
+  if (status === "Đã xác nhận") return "confirmed";
+  if (status === "Hoàn tất") return "completed";
+  if (status === "Đã hủy") return "cancelled";
   return "pending";
 }
 
@@ -850,7 +766,7 @@ function AdminLogin({ onSuccess }) {
     const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
     const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
     if (!adminEmail || !adminPassword) {
-      setError("Ch╞░a cß║Ñu h├¼nh t├ái khoß║ún quß║ún trß╗ï. Vui l├▓ng kiß╗âm tra file .env.local.");
+      setError("Chưa cấu hình tài khoản quản trị. Vui lòng kiểm tra file .env.local.");
       setSubmitting(false);
       return;
     }
@@ -859,7 +775,7 @@ function AdminLogin({ onSuccess }) {
       email.trim().toLowerCase() !== adminEmail.trim().toLowerCase() ||
       password !== adminPassword
     ) {
-      setError("Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.");
+      setError("Email hoặc mật khẩu không chính xác.");
       setPassword("");
       setSubmitting(false);
       return;
@@ -873,31 +789,31 @@ function AdminLogin({ onSuccess }) {
     <main className="admin-login-page">
       <section className="admin-login-card">
         <a className="admin-login-brand" href="/admin">
-          <span>Γîé</span>
+          <span>⌂</span>
           <strong>Stayora</strong>
         </a>
-        <p className="admin-eyebrow">KHU Vß╗░C QUß║óN TRß╗è</p>
-        <h1>Ch├áo mß╗½ng trß╗ƒ lß║íi</h1>
-        <p className="admin-login-subtitle">─É─âng nhß║¡p ─æß╗â tiß║┐p tß╗Ñc quß║ún l├╜ hß╗ç thß╗æng Stayora.</p>
+        <p className="admin-eyebrow">KHU VỰC QUẢN TRỊ</p>
+        <h1>Chào mừng trở lại</h1>
+        <p className="admin-login-subtitle">Đăng nhập để tiếp tục quản lý hệ thống Stayora.</p>
         <form onSubmit={handleSubmit}>
           <label className="admin-field">
-            <span>Email quß║ún trß╗ï</span>
+            <span>Email quản trị</span>
             <input
               autoComplete="username"
               autoFocus
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="Nhß║¡p email quß║ún trß╗ï"
+              placeholder="Nhập email quản trị"
               required
               type="email"
               value={email}
             />
           </label>
           <label className="admin-field">
-            <span>Mß║¡t khß║⌐u</span>
+            <span>Mật khẩu</span>
             <input
               autoComplete="current-password"
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Nhß║¡p mß║¡t khß║⌐u"
+              placeholder="Nhập mật khẩu"
               required
               type="password"
               value={password}
@@ -905,12 +821,12 @@ function AdminLogin({ onSuccess }) {
           </label>
           {error && <p className="admin-form-error" role="alert">{error}</p>}
           <button className="admin-primary-button admin-login-submit" disabled={submitting} type="submit">
-            {submitting ? "─Éang x├íc thß╗▒c..." : "─É─âng nhß║¡p quß║ún trß╗ï"}
+            {submitting ? "Đang xác thực..." : "Đăng nhập quản trị"}
           </button>
         </form>
-        <p className="admin-login-footnote"><span>Γûú</span> Chß╗ë t├ái khoß║ún quß║ún trß╗ï ─æ╞░ß╗úc cß║Ñp quyß╗ün mß╗¢i c├│ thß╗â truy cß║¡p.</p>
+        <p className="admin-login-footnote"><span>▣</span> Chỉ tài khoản quản trị được cấp quyền mới có thể truy cập.</p>
       </section>
-      <span className="admin-login-copyright">┬⌐ {new Date().getFullYear()} Stayora ┬╖ ─É├á Lß║ít</span>
+      <span className="admin-login-copyright">© {new Date().getFullYear()} Stayora · Đà Lạt</span>
     </main>
   );
 }
